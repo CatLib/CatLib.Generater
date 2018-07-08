@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{829992A2-31F5-4041-A775-587C48A1C9FF}</ProjectGuid>
+    <ProjectGuid>{2539DF46-F90C-4707-9606-A010B03D4CDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CatLib.Generater</RootNamespace>
-    <AssemblyName>CatLib.Generater</AssemblyName>
+    <RootNamespace>CatLib.Generater.Editor</RootNamespace>
+    <AssemblyName>CatLib.Generater.Editor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -28,14 +28,28 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>..\..\build\CatLib.Generater.Editor.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FacadeGenerateAttribute.cs" />
+    <Compile Include="CatLib_AOTKit_CodeWritter.cs" />
+    <Compile Include="CatLib_AOTKit_Reflection.cs" />
+    <Compile Include="CatLib_CodeGenerater_APIs.cs" />
+    <Compile Include="CatLib_CodeGenerater_Facade.cs" />
+    <Compile Include="CodeGenerater.cs" />
+    <Compile Include="FacadeCodeGenerater.cs" />
+    <Compile Include="GenerateFacadeAttribute.cs" />
+    <Compile Include="IGenerateAsyncResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnityMenuEntry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CatLib.Generater\CatLib.Generater.csproj">
+      <Project>{829992a2-31f5-4041-a775-587c48a1c9ff}</Project>
+      <Name>CatLib.Generater</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLib.Generater", "src\CatLib.Generater\CatLib.Generater.csproj", "{2539DF46-F90C-4707-9606-A010B03D4CDA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLib.Generater.Editor", "src\CatLib.Generater.Editor\CatLib.Generater.Editor.csproj", "{2539DF46-F90C-4707-9606-A010B03D4CDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLib.Generater", "src\CatLib.Generater\CatLib.Generater.csproj", "{829992A2-31F5-4041-A775-587C48A1C9FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{2539DF46-F90C-4707-9606-A010B03D4CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2539DF46-F90C-4707-9606-A010B03D4CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2539DF46-F90C-4707-9606-A010B03D4CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{829992A2-31F5-4041-A775-587C48A1C9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{829992A2-31F5-4041-A775-587C48A1C9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{829992A2-31F5-4041-A775-587C48A1C9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{829992A2-31F5-4041-A775-587C48A1C9FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

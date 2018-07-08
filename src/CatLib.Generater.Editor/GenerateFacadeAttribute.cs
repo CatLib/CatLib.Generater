@@ -10,13 +10,11 @@
  */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 /// <summary>
 /// 用于生成Facade的标签，这个标签标记的Interface会被导出成为Facade.
 /// </summary>
-[AttributeUsage(AttributeTargets.Interface,Inherited = false,AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Interface)]
 public class GenerateFacadeAttribute : Attribute
 {
 	/// <summary>
@@ -40,8 +38,8 @@ public class GenerateFacadeAttribute : Attribute
 /// GenerateFacadeAttribute标记接口的控制条目，对getter/setter；event;method有效
 /// 使用此条目可以对生成的Facade代码加注释
 /// </summary>
-[AttributeUsage(AttributeTargets.Property|AttributeTargets.Event|AttributeTargets.Method,Inherited = false,AllowMultiple = false)]
-public class GenerateFacadeAPIAttribute:Attribute
+[AttributeUsage(AttributeTargets.Property|AttributeTargets.Event|AttributeTargets.Method,Inherited = false)]
+public class GenerateFacadeAPIAttribute : Attribute
 {
 	/// <summary>
 	/// 未来写在Facade上边的注释，不写则没有注释
