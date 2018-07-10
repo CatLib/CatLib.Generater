@@ -9,20 +9,29 @@
  * Document: http://catlib.io/
  */
 
+using System;
+
 namespace CatLib.Generater.Editor
 {
     /// <summary>
     /// 门面代码生成器
     /// </summary>
-    public sealed class FacadeCodeGenerater : CodeGenerater
+    internal sealed class FacadeCodeGenerater : CodeGenerater
     {
         /// <summary>
-        /// 生成门面
+        /// 默认的门面生成标记
         /// </summary>
-        /// <param name="outputPath">门面输出路径</param>
-        public override IGenerateAsyncResult Generate(string outputPath)
+        protected override Type GenerateAttribute
         {
-            return null;
+            get { return typeof(FacadeGenerateAttribute); }
+        }
+
+        /// <summary>
+        /// 开始生成代码
+        /// </summary>
+        protected override void BeginGenerate(Type[] generaterTypes)
+        {
+            
         }
     }
 }

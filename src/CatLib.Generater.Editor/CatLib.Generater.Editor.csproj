@@ -40,7 +40,9 @@
     <Compile Include="CatLib_CodeGenerater_Facade.cs" />
     <Compile Include="CodeGenerater.cs" />
     <Compile Include="FacadeCodeGenerater.cs" />
+    <Compile Include="GenerateAsyncResult.cs" />
     <Compile Include="GenerateFacadeAttribute.cs" />
+    <Compile Include="IFileWriter.cs" />
     <Compile Include="IGenerateAsyncResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityMenuEntry.cs" />
