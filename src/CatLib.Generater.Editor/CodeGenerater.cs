@@ -40,7 +40,7 @@ namespace CatLib.Generater.Editor
         /// <summary>
         /// 文件处理器
         /// </summary>
-        protected IFileWriter FileWriter { get; private set; }
+        protected IEnvironment Environment { get; private set; }
 
         /// <summary>
         /// 当生成完成时触发
@@ -51,6 +51,28 @@ namespace CatLib.Generater.Editor
         /// 当出现异常时触发
         /// </summary>
         public event Action<Exception> OnException;
+
+        /// <summary>
+        /// 编译进度（0-1表示）
+        /// </summary>
+        public float Process
+        {
+            get
+            {
+                return IsGenerating ? Generating.Process : 0;
+            }
+        }
+
+        /// <summary>
+        /// 是否在编译中
+        /// </summary>
+        public bool IsGenerating
+        {
+            get
+            {
+                return Generating != null;
+            } 
+        }
 
         /// <summary>
         /// 设定一个程序集扫描器
@@ -78,8 +100,8 @@ namespace CatLib.Generater.Editor
         /// <summary>
         /// 生成代码
         /// </summary>
-        /// <param name="fileWriter">文件写入器</param>
-        public IGenerateAsyncResult Generate(IFileWriter fileWriter)
+        /// <param name="environment">文件写入器</param>
+        public IGenerateAsyncResult Generate(IEnvironment environment)
         {
             lock (Generating)
             {
@@ -88,7 +110,7 @@ namespace CatLib.Generater.Editor
                     return Generating;
                 }
                 Generating = new GenerateAsyncResult();
-                FileWriter = fileWriter;
+                Environment = environment;
             }
 
             ThreadPool.QueueUserWorkItem(BeginGenerate);
@@ -100,9 +122,9 @@ namespace CatLib.Generater.Editor
         /// </summary>
         protected void BeginGenerate(object state)
         {
-            FileWriter.Init();
             try
             {
+                Environment.Init();
                 BeginGenerate(GetGeneraterTypes());
             }
             catch (Exception ex)
@@ -111,18 +133,22 @@ namespace CatLib.Generater.Editor
                 {
                     OnException.Invoke(ex);
                 }
-                return;
             }
             finally
             {
-                Generating = null;
-                FileWriter = null;
-            }
+                if (OnCompleted != null)
+                {
+                    OnCompleted.Invoke();
+                }
 
-            if (OnCompleted != null)
-            {
-                OnCompleted.Invoke();
-            }  
+                if (Environment is IDisposable)
+                {
+                    ((IDisposable)Environment).Dispose();
+                }
+
+                Environment = null;
+                Generating = null;
+            }
         }
 
         /// <summary>

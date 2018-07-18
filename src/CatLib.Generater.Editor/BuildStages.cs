@@ -12,13 +12,23 @@
 namespace CatLib.Generater.Editor
 {
     /// <summary>
-    /// 文件写入器
+    /// 编译阶段
     /// </summary>
-    public interface IFileWriter
+    public enum BuildStages
     {
         /// <summary>
-        /// 初始化环境
+        /// 预编译
         /// </summary>
-        void Init();
+        Precompiled,
+
+        /// <summary>
+        /// 代码构建
+        /// </summary>
+        GenCode,
+
+        /// <summary>
+        /// 编译完成
+        /// </summary>
+        Compiled,
     }
 }
