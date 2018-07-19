@@ -9,9 +9,9 @@
  * Document: http://catlib.io/
  */
 
+using CatLib.Generater.Editor.Policy;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -20,7 +20,7 @@ namespace CatLib.Generater.Editor
     /// <summary>
     /// CatLib 代码生成器
     /// </summary>
-    internal abstract class CodeGenerater
+    public abstract class CodeGenerater : ICodeGenerater
     {
         /// <summary>
         /// 程序集扫描器
@@ -35,7 +35,7 @@ namespace CatLib.Generater.Editor
         /// <summary>
         /// 当前正在处理的进度
         /// </summary>
-        protected GenerateAsyncResult Generating { get; private set; }
+        private GenerateAsyncResult generating;
 
         /// <summary>
         /// 文件处理器
@@ -53,13 +53,18 @@ namespace CatLib.Generater.Editor
         public event Action<Exception> OnException;
 
         /// <summary>
+        /// 编译策略
+        /// </summary>
+        private readonly LinkedList<IPolicy>[] stages;
+
+        /// <summary>
         /// 编译进度（0-1表示）
         /// </summary>
         public float Process
         {
             get
             {
-                return IsGenerating ? Generating.Process : 0;
+                return IsGenerating ? generating.Process : 0;
             }
         }
 
@@ -70,8 +75,20 @@ namespace CatLib.Generater.Editor
         {
             get
             {
-                return Generating != null;
+                return generating != null;
             } 
+        }
+
+        /// <summary>
+        /// 构建一个代码生成器
+        /// </summary>
+        protected CodeGenerater()
+        {
+            stages = new LinkedList<IPolicy>[Enum.GetNames(typeof(BuildStages)).Length];
+            for (var i = 0; i < stages.Length; i++)
+            {
+                stages[i] = new LinkedList<IPolicy>();
+            }
         }
 
         /// <summary>
@@ -86,7 +103,7 @@ namespace CatLib.Generater.Editor
         /// <summary>
         /// 默认的生成标记
         /// </summary>
-        protected abstract Type GenerateAttribute { get; }
+        protected abstract Type GenerateAttribute { get; } 
 
         /// <summary>
         /// 设定需要生成的类型列表，在这个列表中的类型一定会被生成
@@ -103,42 +120,53 @@ namespace CatLib.Generater.Editor
         /// <param name="environment">文件写入器</param>
         public IGenerateAsyncResult Generate(IEnvironment environment)
         {
-            lock (Generating)
+            lock (generating)
             {
-                if (Generating != null)
+                if (generating != null)
                 {
-                    return Generating;
+                    return generating;
                 }
-                Generating = new GenerateAsyncResult();
+                generating = new GenerateAsyncResult();
                 Environment = environment;
             }
 
             ThreadPool.QueueUserWorkItem(BeginGenerate);
-            return Generating;
+            return generating;
         }
 
         /// <summary>
         /// 开始生成代码
         /// </summary>
-        protected void BeginGenerate(object state)
+        private void BeginGenerate(object state)
         {
+            var isExceotion = false;
             try
             {
-                Environment.Init();
-                BeginGenerate(GetGeneraterTypes());
+                Environment.Begin();
+                GenerateTypes(GetGeneraterTypes());
             }
             catch (Exception ex)
             {
+                isExceotion = true;
+                Environment.Rollback();
                 if (OnException != null)
                 {
                     OnException.Invoke(ex);
                 }
+                else
+                {
+                    throw ex;
+                }
             }
             finally
             {
-                if (OnCompleted != null)
+                if (!isExceotion)
                 {
-                    OnCompleted.Invoke();
+                    Environment.Commit();
+                    if (OnCompleted != null)
+                    {
+                        OnCompleted.Invoke();
+                    }
                 }
 
                 if (Environment is IDisposable)
@@ -147,14 +175,46 @@ namespace CatLib.Generater.Editor
                 }
 
                 Environment = null;
-                Generating = null;
+                generating = null;
             }
         }
 
         /// <summary>
-        /// 开始生成代码
+        /// 生成代码
         /// </summary>
-        protected abstract void BeginGenerate(Type[] generaterTypes);
+        /// <param name="types">需要生成的代码类型</param>
+        private void GenerateTypes(Type[] types)
+        {
+            for (var i = 0; i < types.Length; i++)
+            {
+                var context = CreateContext(types[i]);
+                foreach (var stage in stages)
+                {
+                    foreach (var policy in stage)
+                    {
+                        policy.Factory(context);
+                    }
+                }
+                generating.Process = (float) i / types.Length;
+            }
+        }
+
+        /// <summary>
+        /// 创建一个上下文
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected abstract Context.Context CreateContext(Type type); 
+
+        /// <summary>
+        /// 添加一个编译策略
+        /// </summary>
+        /// <param name="stage">编译阶段</param>
+        /// <param name="policy">编译策略</param>
+        public void AddPolicy(BuildStages stage, IPolicy policy)
+        {
+            stages[(int) stage].AddLast(policy);
+        }
 
         /// <summary>
         /// 获取需要生成的类型
@@ -170,7 +230,7 @@ namespace CatLib.Generater.Editor
                 results.AddRange(generateTypes);
             }
 
-            return results.Distinct().ToArray();
+            return results.ToArray();
         }
 
         /// <summary>

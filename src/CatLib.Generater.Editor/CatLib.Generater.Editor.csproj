@@ -49,6 +49,8 @@
     <Compile Include="IGenerateAsyncResult.cs" />
     <Compile Include="ICodeGenerater.cs" />
     <Compile Include="Policy\ClassNamePolicy.cs" />
+    <Compile Include="Policy\IPolicy.cs" />
+    <Compile Include="Policy\NameSpcaePolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityMenuEntry.cs" />
   </ItemGroup>

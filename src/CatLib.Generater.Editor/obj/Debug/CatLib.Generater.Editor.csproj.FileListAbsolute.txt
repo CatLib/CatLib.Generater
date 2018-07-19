@@ -1,0 +1,8 @@
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\bin\Debug\CatLib.Generater.Editor.dll
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\bin\Debug\CatLib.Generater.Editor.pdb
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\bin\Debug\CatLib.Generater.dll
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\bin\Debug\CatLib.Generater.pdb
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\obj\Debug\CatLib.Generater.Editor.csprojResolveAssemblyReference.cache
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\obj\Debug\CatLib.Generater.Editor.csproj.CoreCompileInputs.cache
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\obj\Debug\CatLib.Generater.Editor.dll
+D:\Work\CatLib.Generater\src\CatLib.Generater.Editor\obj\Debug\CatLib.Generater.Editor.pdb

@@ -16,14 +16,15 @@ namespace CatLib.Generater.Editor.Context
     /// <summary>
     /// 门面构建上下文
     /// </summary>
-    public class FacadeContext : Context
+    public sealed class FacadeContext : Context
     {
         /// <summary>
         /// 门面上下文构建
         /// </summary>
-        /// <param name="original"></param>
-        public FacadeContext(Type original) 
-            : base(original)
+        /// <param name="environment">运行环境</param>
+        /// <param name="original">原始类型</param>
+        public FacadeContext(IEnvironment environment, Type original) 
+            : base(environment, original)
         {
             Using.Add("CatLib");
         }

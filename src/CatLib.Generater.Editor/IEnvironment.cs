@@ -19,9 +19,19 @@ namespace CatLib.Generater.Editor
     public interface IEnvironment
     {
         /// <summary>
-        /// 初始化环境
+        /// 开始预备环境
         /// </summary>
-        void Init();
+        void Begin();
+
+        /// <summary>
+        /// 提交环境变更
+        /// </summary>
+        void Commit();
+
+        /// <summary>
+        /// 回滚环境
+        /// </summary>
+        void Rollback();
 
         /// <summary>
         /// 创建一个文件写入流

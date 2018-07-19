@@ -11,6 +11,7 @@
 
 using System;
 using System.Reflection;
+using CatLib.Generater.Editor.Policy;
 
 namespace CatLib.Generater.Editor
 {
@@ -50,6 +51,13 @@ namespace CatLib.Generater.Editor
         /// </summary>
         /// <param name="generateList">需要生成的类型列表</param>
         void SetGenerateTypes(Type[] generateList);
+
+        /// <summary>
+        /// 添加一个编译策略
+        /// </summary>
+        /// <param name="stage">编译阶段</param>
+        /// <param name="policy">编译策略</param>
+        void AddPolicy(BuildStages stage, IPolicy policy);
 
         /// <summary>
         /// 生成代码

@@ -12,19 +12,22 @@
 namespace CatLib.Generater.Editor.Policy
 {
     /// <summary>
-    /// 类名构建策略
+    /// 命名空间策略
     /// </summary>
-    public sealed class ClassNamePolicy : IPolicy
+    public sealed class NameSpcaePolicy : IPolicy
     {
         /// <summary>
-        /// 前缀
+        /// 默认的命名空间
         /// </summary>
-        public string Prefix { get; set; }
+        public string Default { get; set; }
 
         /// <summary>
-        /// 后缀
+        /// 构建一个新的命名空间策略
         /// </summary>
-        public string Suffix { get; set; }
+        public NameSpcaePolicy()
+        {
+            Default = "CatLib.Facade";
+        }
 
         /// <summary>
         /// 执行策略
@@ -32,9 +35,9 @@ namespace CatLib.Generater.Editor.Policy
         /// <param name="context">构建上下文</param>
         public void Factory(Context.Context context)
         {
-            var facadeName = context.Original.Name;
-            facadeName = facadeName.StartsWith("I", true, null) ? facadeName.Substring(1, facadeName.Length - 1) : facadeName;
-            context.ClassName = Prefix + facadeName + Suffix;
+            context.Namespace = Default;
+
+            //todo: 命名空间提取策略
         }
     }
 }

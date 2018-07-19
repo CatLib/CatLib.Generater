@@ -26,6 +26,11 @@ namespace CatLib.Generater.Editor.Context
         public Type Original { get; private set; }
 
         /// <summary>
+        /// 环境
+        /// </summary>
+        public IEnvironment Environment { get; private set; }
+
+        /// <summary>
         /// 引用
         /// </summary>
         public virtual List<string> Using { get; }
@@ -63,9 +68,11 @@ namespace CatLib.Generater.Editor.Context
         /// <summary>
         /// 创建一个新的构建上下文
         /// </summary>
+        /// <param name="enviroment">运行环境</param>
         /// <param name="original">原始类型</param>
-        protected Context(Type original)
+        protected Context(IEnvironment enviroment, Type original)
         {
+            Environment = enviroment;
             Original = original;
             Using = new List<string>();
             InheritInterfaces = new List<string>();

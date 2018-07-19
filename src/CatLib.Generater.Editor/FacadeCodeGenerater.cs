@@ -10,13 +10,15 @@
  */
 
 using System;
+using CatLib.Generater.Editor.Context;
+using CatLib.Generater.Editor.Policy;
 
 namespace CatLib.Generater.Editor
 {
     /// <summary>
     /// 门面代码生成器
     /// </summary>
-    internal sealed class FacadeCodeGenerater : CodeGenerater
+    public sealed class FacadeCodeGenerater : CodeGenerater
     {
         /// <summary>
         /// 默认的门面生成标记
@@ -27,11 +29,23 @@ namespace CatLib.Generater.Editor
         }
 
         /// <summary>
-        /// 开始生成代码
+        /// 构建一个门面代码生成器
         /// </summary>
-        protected override void BeginGenerate(Type[] generaterTypes)
+        public FacadeCodeGenerater()
+            : base()
         {
-            
+            AddPolicy(BuildStages.Precompiled, new NameSpcaePolicy());
+            AddPolicy(BuildStages.Precompiled, new ClassNamePolicy());
+        }
+
+        /// <summary>
+        /// 创建一个上下文
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected override Context.Context CreateContext(Type type)
+        {
+            return new FacadeContext(Environment, type);
         }
     }
 }
