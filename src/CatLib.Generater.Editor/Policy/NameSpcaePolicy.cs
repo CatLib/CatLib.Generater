@@ -35,9 +35,15 @@ namespace CatLib.Generater.Editor.Policy
         /// <param name="context">构建上下文</param>
         public void Factory(Context.Context context)
         {
-            context.Namespace = Default;
-
-            //todo: 命名空间提取策略
+            var segment = context.Original.Namespace.Split('.');
+            if (segment.Length >= 1)
+            {
+                context.Namespace = segment[0] + ".Facade";
+            }
+            else
+            {
+                context.Namespace = Default;
+            }
         }
     }
 }
