@@ -38,11 +38,11 @@ namespace CatLib.Generater.Editor.Policy
             var segment = context.Original.Namespace.Split('.');
             if (segment.Length >= 1)
             {
-                context.Namespace = segment[0] + ".Facade";
+                context.Namespace.Name = segment[0] + ".Facade";
             }
             else
             {
-                context.Namespace = Default;
+                context.Namespace.Name = Default;
             }
         }
     }

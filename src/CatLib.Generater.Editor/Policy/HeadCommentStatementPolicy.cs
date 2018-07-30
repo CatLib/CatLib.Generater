@@ -9,6 +9,11 @@
  * Document: http://catlib.io/
  */
 
+using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.Reflection;
+
 namespace CatLib.Generater.Editor.Policy
 {
     /// <summary>
@@ -22,7 +27,7 @@ namespace CatLib.Generater.Editor.Policy
         /// <param name="context">构建上下文</param>
         public void Factory(Context.Context context)
         {
-            
+
         }
     }
 }

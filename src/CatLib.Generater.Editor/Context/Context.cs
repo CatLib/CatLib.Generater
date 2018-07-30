@@ -10,6 +10,7 @@
  */
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -31,39 +32,19 @@ namespace CatLib.Generater.Editor.Context
         public IEnvironment Environment { get; private set; }
 
         /// <summary>
-        /// 引用
+        /// 代码编译单元
         /// </summary>
-        public virtual List<string> Using { get; }
+        public CodeCompileUnit CompileUnit { get; private set; }
 
         /// <summary>
-        /// 命名空间
+        /// 代码命名空间
         /// </summary>
-        public virtual string Namespace { get; set; }
+        public CodeNamespace Namespace { get; private set; }
 
         /// <summary>
-        /// 类名
+        /// 类信息
         /// </summary>
-        public virtual string ClassName { get; set; }
-
-        /// <summary>
-        /// 继承的类
-        /// </summary>
-        public virtual string InheritClass { get; set; }
-
-        /// <summary>
-        /// 继承的接口
-        /// </summary>
-        public virtual List<string> InheritInterfaces { get; }
-
-        /// <summary>
-        /// 属性信息
-        /// </summary>
-        public virtual List<PropertyInfo> Properties { get; }
-
-        /// <summary>
-        /// 函数信息
-        /// </summary>
-        public virtual List<MethodInfo> Methods { get; }
+        public CodeTypeDeclaration Class { get; private set; }
 
         /// <summary>
         /// 创建一个新的构建上下文
@@ -74,10 +55,12 @@ namespace CatLib.Generater.Editor.Context
         {
             Environment = enviroment;
             Original = original;
-            Using = new List<string>();
-            InheritInterfaces = new List<string>();
-            Properties = new List<PropertyInfo>();
-            Methods = new List<MethodInfo>();
+
+            CompileUnit = new CodeCompileUnit();
+            Namespace = new CodeNamespace();
+            Class = new CodeTypeDeclaration();
+            CompileUnit.Namespaces.Add(Namespace);
+            Namespace.Types.Add(Class);
         }
     }
 }

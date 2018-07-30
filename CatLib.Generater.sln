@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLib.Generater.Editor", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLib.Generater", "src\CatLib.Generater\CatLib.Generater.csproj", "{829992A2-31F5-4041-A775-587C48A1C9FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLib.Generater.Editor.Tests", "src\CatLib.Generater.Editor.Tests\CatLib.Generater.Editor.Tests.csproj", "{C2A1F566-F1E0-4CC1-AE5F-0FACB32B011B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{829992A2-31F5-4041-A775-587C48A1C9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{829992A2-31F5-4041-A775-587C48A1C9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{829992A2-31F5-4041-A775-587C48A1C9FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2A1F566-F1E0-4CC1-AE5F-0FACB32B011B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A1F566-F1E0-4CC1-AE5F-0FACB32B011B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A1F566-F1E0-4CC1-AE5F-0FACB32B011B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A1F566-F1E0-4CC1-AE5F-0FACB32B011B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

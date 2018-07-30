@@ -26,8 +26,8 @@ namespace CatLib.Generater.Editor.Policy
         /// <param name="context">构建上下文</param>
         public void Factory(Context.Context context)
         {
-            ScanningType(context.Properties, context.Original);
-            ScanningInterface(context.Properties, context.Original);
+            //ScanningType(context.Properties, context.Original);
+            //ScanningInterface(context.Properties, context.Original);
         }
 
         /// <summary>

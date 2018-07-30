@@ -34,7 +34,7 @@ namespace CatLib.Generater.Editor.Policy
         {
             var facadeName = context.Original.Name;
             facadeName = facadeName.StartsWith("I", true, null) ? facadeName.Substring(1, facadeName.Length - 1) : facadeName;
-            context.ClassName = Prefix + facadeName + Suffix;
+            context.Class.Name = Prefix + facadeName + Suffix;
         }
     }
 }

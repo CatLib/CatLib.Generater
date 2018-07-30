@@ -10,6 +10,7 @@
  */
 
 using System;
+using System.CodeDom;
 
 namespace CatLib.Generater.Editor.Context
 {
@@ -26,7 +27,7 @@ namespace CatLib.Generater.Editor.Context
         public FacadeContext(IEnvironment environment, Type original) 
             : base(environment, original)
         {
-            Using.Add("CatLib");
+            Namespace.Imports.Add(new CodeNamespaceImport("CatLib"));
         }
     }
 }
