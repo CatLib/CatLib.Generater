@@ -9,12 +9,14 @@
  * Document: http://catlib.io/
  */
 
+using System.Reflection;
+
 namespace CatLib.Generater.Editor.Policy
 {
     /// <summary>
-    /// 类名构建策略
+    /// 类构建策略
     /// </summary>
-    public sealed class ClassNamePolicy : IPolicy
+    public sealed class ClassCreatePolicy : IPolicy
     {
         /// <summary>
         /// 前缀
@@ -27,6 +29,19 @@ namespace CatLib.Generater.Editor.Policy
         public string Suffix { get; set; }
 
         /// <summary>
+        /// 类特性
+        /// </summary>
+        public TypeAttributes TypeAttributes { get; set; }
+
+        /// <summary>
+        /// 构造一个新的类名构建策略
+        /// </summary>
+        public ClassCreatePolicy()
+        {
+            TypeAttributes = TypeAttributes.Public | TypeAttributes.Sealed;
+        }
+
+        /// <summary>
         /// 执行策略
         /// </summary>
         /// <param name="context">构建上下文</param>
@@ -35,6 +50,9 @@ namespace CatLib.Generater.Editor.Policy
             var facadeName = context.Original.Name;
             facadeName = facadeName.StartsWith("I", true, null) ? facadeName.Substring(1, facadeName.Length - 1) : facadeName;
             context.Class.Name = Prefix + facadeName + Suffix;
+            context.Class.IsClass = true;
+            context.Class.TypeAttributes = TypeAttributes;
+            context.Class.BaseTypes.Add("Facade<" + context.Original.FullName + ">");
         }
     }
 }

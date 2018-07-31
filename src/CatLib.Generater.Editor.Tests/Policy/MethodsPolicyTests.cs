@@ -27,6 +27,20 @@ namespace CatLib.Generater.Editor.Tests.Policy
         public interface ITestInterface : ITestInterfaceParent, IDisposable
         {
             void Say();
+
+            event Action TestEvent;
+
+            int add_TestEvent();
+
+            int TestAttribute { get; set; }
+        }
+
+        private event Action bb;
+
+        public event Action aaa
+        {
+            add { bb += value; }
+            remove { bb -= value; }
         }
 
         [TestMethod]

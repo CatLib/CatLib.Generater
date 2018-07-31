@@ -48,7 +48,7 @@
     <Compile Include="IEnvironment.cs" />
     <Compile Include="IGenerateAsyncResult.cs" />
     <Compile Include="ICodeGenerater.cs" />
-    <Compile Include="Policy\ClassNamePolicy.cs" />
+    <Compile Include="Policy\ClassCreatePolicy.cs" />
     <Compile Include="Policy\HeadCommentStatementPolicy.cs" />
     <Compile Include="Policy\IPolicy.cs" />
     <Compile Include="Policy\MethodsPolicy.cs" />

@@ -35,7 +35,7 @@ namespace CatLib.Generater.Editor
             : base()
         {
             AddPolicy(BuildStages.Precompiled, new NameSpcaePolicy());
-            AddPolicy(BuildStages.Precompiled, new ClassNamePolicy());
+            AddPolicy(BuildStages.Precompiled, new ClassCreatePolicy());
             AddPolicy(BuildStages.Precompiled, new MethodsPolicy());
             AddPolicy(BuildStages.Precompiled, new PropertiesPolicy());
         }
