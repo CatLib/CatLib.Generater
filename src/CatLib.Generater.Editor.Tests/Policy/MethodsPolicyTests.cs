@@ -10,6 +10,9 @@
  */
 
 using System;
+using System.CodeDom.Compiler;
+using System.IO;
+using System.Text;
 using CatLib.Generater.Editor.Context;
 using CatLib.Generater.Editor.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +35,7 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
             int add_TestEvent();
 
-            int TestAttribute { get; set; }
+            int TestAttribute_Name { get; set; }
         }
 
         private event Action bb;
@@ -46,11 +49,14 @@ namespace CatLib.Generater.Editor.Tests.Policy
         [TestMethod]
         public void TestMethodsInterfacePolicy()
         {
-            var policy = new MethodsPolicy();
+            var policy = new MemberStaticWrapPolicy();
             var context = new FacadeContext(null, typeof(ITestInterface));
+            context.Class.Name = "UnitTest";
 
             policy.Factory(context);
-            Assert.AreEqual(3, context.Class.Members.Count);
+
+            Console.WriteLine(Util.Generate(context.CompileUnit));
+            //Assert.AreEqual(3, context.Class.Members.Count);
         }
     }
 }

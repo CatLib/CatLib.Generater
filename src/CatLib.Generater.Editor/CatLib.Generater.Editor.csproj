@@ -44,6 +44,7 @@
     <Compile Include="Context\FacadeContext.cs" />
     <Compile Include="FacadeCodeGenerater.cs" />
     <Compile Include="GenerateAsyncResult.cs" />
+    <Compile Include="GenerateException.cs" />
     <Compile Include="GenerateFacadeAttribute.cs" />
     <Compile Include="IEnvironment.cs" />
     <Compile Include="IGenerateAsyncResult.cs" />
@@ -51,7 +52,7 @@
     <Compile Include="Policy\ClassCreatePolicy.cs" />
     <Compile Include="Policy\HeadCommentStatementPolicy.cs" />
     <Compile Include="Policy\IPolicy.cs" />
-    <Compile Include="Policy\MethodsPolicy.cs" />
+    <Compile Include="Policy\MemberStaticWrapPolicy.cs" />
     <Compile Include="Policy\NameSpcaePolicy.cs" />
     <Compile Include="Policy\PropertiesPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
