@@ -129,7 +129,8 @@ namespace CatLib.Generater.Editor.Policy
                 ImportSpecialMethod(method);
             }
 
-            //Console.WriteLine(method.Name);
+
+            Console.WriteLine(method.Name);
         }
 
         /// <summary>
