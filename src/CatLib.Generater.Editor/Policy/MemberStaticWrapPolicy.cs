@@ -37,6 +37,20 @@ namespace CatLib.Generater.Editor.Policy
         public string StaticInstance;
 
         /// <summary>
+        /// 事件模版
+        /// </summary>
+        private readonly string eventTemplate =
+ @"    public static event {type} {name} {
+        add {  
+            {class}.{event} += value;
+        }
+        remove {
+            {class}.{event} -= value;
+        }
+    }";
+
+
+        /// <summary>
         /// 构建一个成员静态包装策略
         /// </summary>
         public MemberStaticWrapPolicy()
@@ -115,7 +129,7 @@ namespace CatLib.Generater.Editor.Policy
                 ImportSpecialMethod(method);
             }
 
-            Console.WriteLine(method.Name);
+            //Console.WriteLine(method.Name);
         }
 
         /// <summary>
@@ -134,10 +148,8 @@ namespace CatLib.Generater.Editor.Policy
             switch (segment[0])
             {
                 case "add":
-
-                    break;
                 case "remove":
-
+                    ImportAddRemoveSpecialMethod(segment[1], method);
                     break;
                 case "get":
                     ImportGetSetSpecialMethod(segment[1], method, true);
@@ -148,6 +160,43 @@ namespace CatLib.Generater.Editor.Policy
                 default:
                     throw new GenerateException("Unknow special method [" + segment[0] + "]");
             }
+        }
+
+        /// <summary>
+        /// 生成一个AddRemove的特殊方法
+        /// </summary>
+        /// <param name="name">方法名字</param>
+        /// <param name="method">原始方法信息</param>
+        private void ImportAddRemoveSpecialMethod(string name, MethodInfo method)
+        {
+            if (methods.ContainsKey(name))
+            {
+                return;
+            }
+
+            CodeSnippetTypeMember generate;
+            methods[name] = generate = CreateAddRemoveSepcialMethod(name, method);
+
+            var code = eventTemplate.Replace("{type}", context.Original.GetEvent(name).EventHandlerType.FullName);
+            code = code.Replace("{name}", name);
+            code = code.Replace("{class}", context.Class.Name);
+            code = code.Replace("{event}", StaticInstance);
+            generate.Text = code;
+        }
+
+        /// <summary>
+        /// 创建一个GetSet的特殊方法
+        /// </summary>
+        /// <param name="name">方法名字</param>
+        /// <param name="method">原始方法</param>
+        private CodeSnippetTypeMember CreateAddRemoveSepcialMethod(string name, MethodInfo method)
+        {
+            var member = new CodeSnippetTypeMember
+            {
+                Name = name,
+                Attributes = MemberAttributes.Static | MemberAttributes.Public,
+            };
+            return member;
         }
 
         /// <summary>
@@ -200,9 +249,12 @@ namespace CatLib.Generater.Editor.Policy
         /// <param name="method">原始方法</param>
         private CodeTypeMember CreateGetSetSepcialMethod(string name, MethodInfo method)
         {
-            var member = new CodeMemberProperty { Name = name };
-            member.Attributes |= MemberAttributes.Static | MemberAttributes.Public;
-            member.Type = new CodeTypeReference(method.ReturnType);
+            var member = new CodeMemberProperty
+            {
+                Name = name,
+                Attributes = MemberAttributes.Static | MemberAttributes.Public,
+                Type = new CodeTypeReference(method.ReturnType)
+            };
             return member;
         }
     }

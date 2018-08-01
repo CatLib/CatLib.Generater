@@ -9,13 +9,10 @@
  * Document: http://catlib.io/
  */
 
-using System;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Text;
 using CatLib.Generater.Editor.Context;
 using CatLib.Generater.Editor.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace CatLib.Generater.Editor.Tests.Policy
 {
@@ -35,16 +32,11 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
             int add_TestEvent();
 
-            int TestAttribute_Name { get; set; }
+            int TestAttribute { get; set; }
         }
 
         private event Action bb;
 
-        public event Action aaa
-        {
-            add { bb += value; }
-            remove { bb -= value; }
-        }
 
         [TestMethod]
         public void TestMethodsInterfacePolicy()
@@ -52,7 +44,6 @@ namespace CatLib.Generater.Editor.Tests.Policy
             var policy = new MemberStaticWrapPolicy();
             var context = new FacadeContext(null, typeof(ITestInterface));
             context.Class.Name = "UnitTest";
-
             policy.Factory(context);
 
             Console.WriteLine(Util.Generate(context.CompileUnit));

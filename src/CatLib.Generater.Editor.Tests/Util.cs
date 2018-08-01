@@ -19,7 +19,7 @@ namespace CatLib.Generater.Editor.Tests
     /// <summary>
     /// 通用测试代码
     /// </summary>
-    internal class Util
+    public class Util
     {
         /// <summary>
         /// 生成对应的代码
