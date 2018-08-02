@@ -54,7 +54,8 @@ namespace CatLib.Generater.Editor.Tests.Policy
         {
             var policy = new MemberStaticWrapPolicy();
             var context = new FacadeContext(null, typeof(ITestInterface<int>));
-            context.Class.Name = "UnitTest";
+            var classPolicy = new ClassCreatePolicy();
+            classPolicy.Factory(context);
             policy.Factory(context);
 
             Console.WriteLine(Util.Generate(context.CompileUnit));
