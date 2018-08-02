@@ -44,6 +44,25 @@ namespace CatLib.Generater.Editor.Tests
         /// <summary>
         /// 生成对应的代码
         /// </summary>
+        /// <param name="type">类型模型</param>
+        /// <returns>生成的代码</returns>
+        public static string GenerateFromType(CodeTypeDeclaration type)
+        {
+            using (var sw = new StringWriter(new StringBuilder()))
+            {
+                CodeDomProvider.CreateProvider("CSharp").GenerateCodeFromType(
+                    type, sw, new CodeGeneratorOptions
+                    {
+                        ElseOnClosing = true,
+                        IndentString = "    "
+                    });
+                return sw.ToString().Trim();
+            }
+        }
+
+        /// <summary>
+        /// 生成对应的代码
+        /// </summary>
         /// <param name="member">成员模型</param>
         /// <returns>生成的代码</returns>
         public static string GenerateFromMember(CodeTypeMember member)

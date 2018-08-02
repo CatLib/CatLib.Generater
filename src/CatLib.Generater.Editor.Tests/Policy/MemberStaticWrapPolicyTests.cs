@@ -62,6 +62,7 @@ namespace CatLib.Generater.Editor.Tests.Policy
             //Assert.AreEqual(3, context.Class.Members.Count);
         }
 
+        #region 测试正常的方法
         public interface ITestNormalFunctionWrap
         {
             void VoidReturn();
@@ -95,12 +96,80 @@ namespace CatLib.Generater.Editor.Tests.Policy
             Assert.AreEqual(
 @"public static int IntReturn() {
     return Instance.IntReturn();
-}", Util.GenerateFromMember(context.Class.Members[0]));
+}", Util.GenerateFromMember(context.Class.Members[1]));
 
             Assert.AreEqual(
 @"public static int IntReturnAndHasParams(string name) {
     return Instance.IntReturnAndHasParams(name);
 }", Util.GenerateFromMember(context.Class.Members[2]));
         }
+        #endregion
+
+        #region 测试含有默认值的方法
+        public interface ITestHasDefaultValueFunction
+        {
+            void HasIntDefaultValue(int num = 100);
+            void HasFloatDefaultValue(float num = 100.123f, float num2 = 200);
+            void HasBooleanDefaultValue(bool v1 = true, bool v2 = false);
+            void HasDoubleDefaultValue(double num = 123.123456789d, double num2 = 123, double num3 = 123.1234567890f);
+            void HasUintDefaultValue(uint num = 122);
+            void HasStringDefaultValue(string str = "helloworld");
+            void HasStringNullDefaultValue(string str = null);
+            void HasClassDefaultValue(ITestHasDefaultValueFunction cls = null);
+            void TestGenericTypeDefaultValue(Dictionary<string, ITestHasDefaultValueFunction> generic = null);
+        }
+
+        [TestMethod]
+        public void TestHasDefaultValueFunction()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestHasDefaultValueFunction))
+            {
+                Class = { Name = "TestHasDefaultValueFunction" }
+            };
+
+            policy.Factory(context);
+            Console.WriteLine(Util.GenerateFromType(context.Class));
+            Assert.AreEqual(
+@"public class TestHasDefaultValueFunction {
+    
+    public static void HasIntDefaultValue(int num = 100) {
+        Instance.HasIntDefaultValue(num);
+    }
+    
+    public static void HasFloatDefaultValue(float num = 100.123f, float num2 = 200f) {
+        Instance.HasFloatDefaultValue(num, num2);
+    }
+    
+    public static void HasBooleanDefaultValue(bool v1 = true, bool v2 = false) {
+        Instance.HasBooleanDefaultValue(v1, v2);
+    }
+    
+    public static void HasDoubleDefaultValue(double num = 123.123456789d, double num2 = 123d, double num3 = 123.123458862305d) {
+        Instance.HasDoubleDefaultValue(num, num2, num3);
+    }
+    
+    public static void HasUintDefaultValue(uint num = 122) {
+        Instance.HasUintDefaultValue(num);
+    }
+    
+    public static void HasStringDefaultValue(string str = ""helloworld"") {
+        Instance.HasStringDefaultValue(str);
+    }
+    
+    public static void HasStringNullDefaultValue(string str = null) {
+        Instance.HasStringNullDefaultValue(str);
+    }
+    
+    public static void HasClassDefaultValue(CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestHasDefaultValueFunction cls = null) {
+        Instance.HasClassDefaultValue(cls);
+    }
+    
+    public static void TestGenericTypeDefaultValue(System.Collections.Generic.Dictionary<string, CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestHasDefaultValueFunction> generic = null) {
+        Instance.TestGenericTypeDefaultValue(generic);
+    }
+}", Util.GenerateFromType(context.Class));
+        }
+        #endregion
     }
 }
