@@ -1,6 +1,5 @@
 D:\Work\CatLib.Generater\src\CatLib.Generater\bin\Debug\CatLib.Generater.dll
 D:\Work\CatLib.Generater\src\CatLib.Generater\bin\Debug\CatLib.Generater.pdb
-D:\Work\CatLib.Generater\src\CatLib.Generater\obj\Debug\CatLib.Generater.csprojResolveAssemblyReference.cache
 D:\Work\CatLib.Generater\src\CatLib.Generater\obj\Debug\CatLib.Generater.csproj.CoreCompileInputs.cache
 D:\Work\CatLib.Generater\src\CatLib.Generater\obj\Debug\CatLib.Generater.dll
 D:\Work\CatLib.Generater\src\CatLib.Generater\obj\Debug\CatLib.Generater.pdb

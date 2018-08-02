@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace CatLib.Generater.Editor.Tests.Policy
 {
     [TestClass]
-    public class MethodsPolicyTests
+    public class MemberStaticWrapPolicyTests
     {
         public interface ITestInterfaceParent
         {
@@ -60,6 +60,47 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
             Console.WriteLine(Util.Generate(context.CompileUnit));
             //Assert.AreEqual(3, context.Class.Members.Count);
+        }
+
+        public interface ITestNormalFunctionWrap
+        {
+            void VoidReturn();
+
+            int IntReturn();
+
+            int IntReturnAndHasParams(string name);
+        }
+
+        [TestMethod]
+        public void TestNormalFunctionWrap()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestNormalFunctionWrap))
+            {
+                Class = {Name = "TestNormalFunctionWrap"}
+            };
+
+            policy.Factory(context);
+
+            Assert.AreEqual(3, context.Class.Members.Count);
+            Assert.AreEqual("VoidReturn", context.Class.Members[0].Name);
+            Assert.AreEqual("IntReturn", context.Class.Members[1].Name);
+            Assert.AreEqual("IntReturnAndHasParams", context.Class.Members[2].Name);
+
+            Assert.AreEqual(
+@"public static void VoidReturn() {
+    Instance.VoidReturn();
+}", Util.GenerateFromMember(context.Class.Members[0]));
+
+            Assert.AreEqual(
+@"public static int IntReturn() {
+    return Instance.IntReturn();
+}", Util.GenerateFromMember(context.Class.Members[0]));
+
+            Assert.AreEqual(
+@"public static int IntReturnAndHasParams(string name) {
+    return Instance.IntReturnAndHasParams(name);
+}", Util.GenerateFromMember(context.Class.Members[2]));
         }
     }
 }

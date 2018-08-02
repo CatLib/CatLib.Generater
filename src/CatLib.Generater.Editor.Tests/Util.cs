@@ -37,7 +37,26 @@ namespace CatLib.Generater.Editor.Tests
                         ElseOnClosing = true,
                         IndentString = "    "
                     });
-                return sw.ToString();
+                return sw.ToString().Trim();
+            }
+        }
+
+        /// <summary>
+        /// 生成对应的代码
+        /// </summary>
+        /// <param name="member">成员模型</param>
+        /// <returns>生成的代码</returns>
+        public static string GenerateFromMember(CodeTypeMember member)
+        {
+            using (var sw = new StringWriter(new StringBuilder()))
+            {
+                CodeDomProvider.CreateProvider("CSharp").GenerateCodeFromMember(
+                    member, sw, new CodeGeneratorOptions
+                    {
+                        ElseOnClosing = true,
+                        IndentString = "    "
+                    });
+                return sw.ToString().Trim();
             }
         }
     }
