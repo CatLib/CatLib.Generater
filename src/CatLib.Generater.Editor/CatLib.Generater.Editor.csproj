@@ -54,7 +54,6 @@
     <Compile Include="Policy\IPolicy.cs" />
     <Compile Include="Policy\MemberStaticWrapPolicy.cs" />
     <Compile Include="Policy\NameSpcaePolicy.cs" />
-    <Compile Include="Policy\PropertiesPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityMenuEntry.cs" />
   </ItemGroup>

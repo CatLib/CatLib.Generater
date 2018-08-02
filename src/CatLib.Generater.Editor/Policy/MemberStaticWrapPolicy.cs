@@ -11,8 +11,11 @@
 
 using System;
 using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace CatLib.Generater.Editor.Policy
 {
@@ -42,12 +45,17 @@ namespace CatLib.Generater.Editor.Policy
         private readonly string eventTemplate =
  @"    public static event {type} {name} {
         add {  
-            {class}.{event} += value;
+            {instance}.{event} += value;
         }
         remove {
-            {class}.{event} -= value;
+            {instance}.{event} -= value;
         }
     }";
+
+        /// <summary>
+        /// CodeDom服务
+        /// </summary>
+        private readonly CodeDomProvider codeDomProvider;
 
 
         /// <summary>
@@ -57,6 +65,7 @@ namespace CatLib.Generater.Editor.Policy
         {
             methods = new Dictionary<string, CodeTypeMember>();
             StaticInstance = "Instance";
+            codeDomProvider = CodeDomProvider.CreateProvider("CSharp");
         }
 
         /// <summary>
@@ -67,8 +76,8 @@ namespace CatLib.Generater.Editor.Policy
         {
             this.context = context;
             methods.Clear();
-            ScanningType(context, context.Original);
-            ScanningInterface(context, context.Original);
+            ScanningType(context.Original);
+            ScanningInterface(context.Original);
 
             foreach (var method in methods)
             {
@@ -79,13 +88,12 @@ namespace CatLib.Generater.Editor.Policy
         /// <summary>
         /// 扫描指定类型中的函数
         /// </summary>
-        /// <param name="context">上下文</param>
         /// <param name="type">指定类型</param>
-        private void ScanningType(Context.Context context, Type type)
+        private void ScanningType(Type type)
         {
             while (type != null)
             {
-                Imports(context, type);
+                Imports(type);
                 type = type.BaseType;
             }
         }
@@ -93,44 +101,144 @@ namespace CatLib.Generater.Editor.Policy
         /// <summary>
         /// 对接口进行扫描
         /// </summary>
-        /// <param name="context">上下文</param>
         /// <param name="type">提取当前类型的实现接口类型中的函数</param>
-        private void ScanningInterface(Context.Context context, Type type)
+        private void ScanningInterface(Type type)
         {
             foreach (var baseInterface in type.GetInterfaces())
             {
-                Imports(context, baseInterface);
-                ScanningInterface(context, baseInterface);
+                Imports(baseInterface);
+                ScanningInterface(baseInterface);
             }
 ;       }
 
         /// <summary>
         /// 为指定类型提取方法
         /// </summary>
-        /// <param name="context">上下文</param>
         /// <param name="type">需要提取函数的类型</param>
-        private void Imports(Context.Context context, Type type)
+        private void Imports(Type type)
         {
             foreach (var method in type.GetMethods())
             {
-                ImportMethod(method);
+                ImportMember(method);
             }
         }
 
         /// <summary>
-        /// 导入方法
+        /// 导入成员，包括允许的特殊函数
         /// </summary>
-        /// <param name="method">需要都的函数</param>
-        private void ImportMethod(MethodInfo method)
+        /// <param name="method">需要导入的成员函数</param>
+        private void ImportMember(MethodInfo method)
         {
             if (method.IsSpecialName)
             {
                 // 导入一些特殊的成员，如：属性，事件
                 ImportSpecialMethod(method);
             }
-
+            else
+            {
+                ImportMethod(method);
+            }
 
             Console.WriteLine(method.Name);
+        }
+
+        /// <summary>
+        /// 导入返回值为<see cref="Void"/>的函数
+        /// </summary>
+        /// <param name="method">需要导入的成员函数</param>
+        private void ImportMethod(MethodInfo method)
+        {
+            if (methods.ContainsKey(method.Name))
+            {
+                return;
+            }
+
+            var generate = CreateMethod(method.Name, method);
+            var parameters = AttachParameter(generate, method);
+
+            if (method.ReturnType != typeof(void))
+            {
+                generate.Statements.Add(new CodeMethodReturnStatement(new CodeMethodInvokeExpression(
+                    new CodeMethodReferenceExpression(GetInstance(), method.Name
+                    ), parameters
+                )));
+            }
+            else
+            {
+                generate.Statements.Add(new CodeMethodInvokeExpression(
+                    new CodeMethodReferenceExpression(GetInstance(), method.Name
+                    ), parameters
+                ));
+            }
+
+            methods[method.Name] = generate;
+        }
+
+        /// <summary>
+        /// 附上成员参数信息
+        /// </summary>
+        /// <param name="member">成员方法</param>
+        /// <param name="method">需要导入的成员函数</param>
+        private CodeExpression[] AttachParameter(CodeMemberMethod member, MethodInfo method)
+        {
+            var parameters = method.GetParameters();
+            var result = new CodeExpression[parameters.Length];
+            for (var index = 0; index < parameters.Length; index++)
+            {
+                var parameter = parameters[index];
+                var parameterDeclaration = new CodeParameterDeclarationExpression
+                {
+                    Name = parameter.Name,
+                    Type = new CodeTypeReference(parameter.ParameterType.ToString().TrimEnd('&')),
+                };
+
+                var direction = string.Empty;
+                // in, out, ref 参数处理
+                if (parameter.IsOut)
+                {
+                    parameterDeclaration.Direction = FieldDirection.Out;
+                    direction = "out ";
+                }
+                else if (parameter.IsIn)
+                {
+                    parameterDeclaration.Direction = FieldDirection.In;
+                }
+                else if (parameter.ParameterType.IsByRef)
+                {
+                    parameterDeclaration.Direction = FieldDirection.Ref;
+                    direction = "ref ";
+                }
+
+                // 带有默认值的可选参数处理
+                if (parameter.IsOptional)
+                {
+                    parameterDeclaration.Name += " = " + ToDefaultValueString(parameter.DefaultValue);
+                }
+
+                member.Parameters.Add(parameterDeclaration);
+                result[index] = new CodeVariableReferenceExpression
+                {
+                    VariableName = direction + parameter.Name
+                };
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 创建一个GetSet的特殊方法
+        /// </summary>
+        /// <param name="name">方法名字</param>
+        /// <param name="method">原始方法</param>
+        private CodeMemberMethod CreateMethod(string name, MethodInfo method)
+        {
+            var member = new CodeMemberMethod
+            {
+                Name = name,
+                Attributes = MemberAttributes.Static | MemberAttributes.Public,
+                ReturnType = new CodeTypeReference(method.ReturnType.ToString())
+            };
+            return member;
         }
 
         /// <summary>
@@ -178,10 +286,11 @@ namespace CatLib.Generater.Editor.Policy
             CodeSnippetTypeMember generate;
             methods[name] = generate = CreateAddRemoveSepcialMethod(name, method);
 
-            var code = eventTemplate.Replace("{type}", context.Original.GetEvent(name).EventHandlerType.FullName);
+            var code = eventTemplate.Replace("{type}", GenerateExpression(new CodeTypeReferenceExpression(
+                new CodeTypeReference(context.Original.GetEvent(name).EventHandlerType.ToString()))));
             code = code.Replace("{name}", name);
-            code = code.Replace("{class}", context.Class.Name);
-            code = code.Replace("{event}", StaticInstance);
+            code = code.Replace("{instance}", StaticInstance);
+            code = code.Replace("{event}", name);
             generate.Text = code;
         }
 
@@ -225,7 +334,7 @@ namespace CatLib.Generater.Editor.Policy
 
                 generate.GetStatements.Add(new CodeMethodReturnStatement(
                     new CodeFieldReferenceExpression(
-                        new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(context.Class.Name), StaticInstance),
+                        GetInstance(),
                         name)));
             }
             else
@@ -237,7 +346,7 @@ namespace CatLib.Generater.Editor.Policy
 
                 generate.SetStatements.Add(new CodeAssignStatement(
                     new CodeFieldReferenceExpression(
-                        new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(context.Class.Name), StaticInstance),
+                        GetInstance(),
                         name
                     ), new CodePropertySetValueReferenceExpression()));
             }
@@ -254,9 +363,70 @@ namespace CatLib.Generater.Editor.Policy
             {
                 Name = name,
                 Attributes = MemberAttributes.Static | MemberAttributes.Public,
-                Type = new CodeTypeReference(method.ReturnType)
+                Type = new CodeTypeReference(method.ReturnType.ToString())
             };
             return member;
+        }
+
+        /// <summary>
+        /// 获取实例表达式
+        /// </summary>
+        /// <returns></returns>
+        private CodeExpression GetInstance()
+        {
+            return new CodeVariableReferenceExpression(StaticInstance);
+        }
+
+        /// <summary>
+        /// 生成类型
+        /// </summary>
+        /// <param name="expression">表达式</param>
+        /// <returns>代码结构</returns>
+        private string GenerateExpression(CodeExpression expression)
+        {
+            using (var sw = new StringWriter(new StringBuilder()))
+            {
+                codeDomProvider.GenerateCodeFromExpression(expression, sw, new CodeGeneratorOptions
+                {
+                    ElseOnClosing = true,
+                });
+                return sw.ToString();
+            }
+        }
+
+        /// <summary>
+        /// 转为默认值所使用的字符串
+        /// </summary>
+        /// <param name="data">基础数据</param>
+        /// <returns>被转换的字符串</returns>
+        private string ToDefaultValueString(object data)
+        {
+            if (data == null)
+            {
+                return "null";
+            }
+
+            if (data is string)
+            {
+                return "\"" + data + "\"";
+            }
+
+            if (data is float)
+            {
+                return data + "f";
+            }
+
+            if (data is double)
+            {
+                return data + "d";
+            }
+
+            if (data is bool)
+            {
+                return data.ToString().ToLower();
+            }
+
+            return data.ToString();
         }
     }
 }
