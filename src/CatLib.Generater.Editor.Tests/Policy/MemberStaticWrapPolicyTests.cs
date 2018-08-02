@@ -63,6 +63,7 @@ namespace CatLib.Generater.Editor.Tests.Policy
         }
 
         #region 测试正常的方法
+
         public interface ITestNormalFunctionWrap
         {
             void VoidReturn();
@@ -89,23 +90,25 @@ namespace CatLib.Generater.Editor.Tests.Policy
             Assert.AreEqual("IntReturnAndHasParams", context.Class.Members[2].Name);
 
             Assert.AreEqual(
-@"public static void VoidReturn() {
+                @"public static void VoidReturn() {
     Instance.VoidReturn();
 }", Util.GenerateFromMember(context.Class.Members[0]));
 
             Assert.AreEqual(
-@"public static int IntReturn() {
+                @"public static int IntReturn() {
     return Instance.IntReturn();
 }", Util.GenerateFromMember(context.Class.Members[1]));
 
             Assert.AreEqual(
-@"public static int IntReturnAndHasParams(string name) {
+                @"public static int IntReturnAndHasParams(string name) {
     return Instance.IntReturnAndHasParams(name);
 }", Util.GenerateFromMember(context.Class.Members[2]));
         }
+
         #endregion
 
         #region 测试含有默认值的方法
+
         public interface ITestHasDefaultValueFunction
         {
             void HasIntDefaultValue(int num = 100);
@@ -125,13 +128,13 @@ namespace CatLib.Generater.Editor.Tests.Policy
             var policy = new MemberStaticWrapPolicy();
             var context = new FacadeContext(null, typeof(ITestHasDefaultValueFunction))
             {
-                Class = { Name = "TestHasDefaultValueFunction" }
+                Class = {Name = "TestHasDefaultValueFunction"}
             };
 
             policy.Factory(context);
-            Console.WriteLine(Util.GenerateFromType(context.Class));
+            // Console.WriteLine(Util.GenerateFromType(context.Class));
             Assert.AreEqual(
-@"public class TestHasDefaultValueFunction {
+                @"public class TestHasDefaultValueFunction {
     
     public static void HasIntDefaultValue(int num = 100) {
         Instance.HasIntDefaultValue(num);
@@ -170,6 +173,174 @@ namespace CatLib.Generater.Editor.Tests.Policy
     }
 }", Util.GenerateFromType(context.Class));
         }
+
+        #endregion
+
+        #region 测试带有事件的方法
+
+        public interface ITestEvent
+        {
+            event Action ActionEventTest;
+            event Action<ITestEvent> ActionGenericEventTest;
+            event Func<int, Dictionary<string, ITestEvent>> FuncEventTest;
+        }
+
+        [TestMethod]
+        public void TestEvent()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestEvent))
+            {
+                Class = {Name = "TestEvent"}
+            };
+
+            policy.Factory(context);
+            // Console.WriteLine(Util.GenerateFromType(context.Class));
+
+            Assert.AreEqual(
+                @"public class TestEvent {
+    
+    public static event System.Action ActionEventTest {
+        add {  
+            Instance.ActionEventTest += value;
+        }
+        remove {
+            Instance.ActionEventTest -= value;
+        }
+    }
+    public static event System.Action<CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestEvent> ActionGenericEventTest {
+        add {  
+            Instance.ActionGenericEventTest += value;
+        }
+        remove {
+            Instance.ActionGenericEventTest -= value;
+        }
+    }
+    public static event System.Func<int, System.Collections.Generic.Dictionary<string, CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestEvent>> FuncEventTest {
+        add {  
+            Instance.FuncEventTest += value;
+        }
+        remove {
+            Instance.FuncEventTest -= value;
+        }
+    }
+}", Util.GenerateFromType(context.Class));
+        }
+
+        #endregion
+
+        #region 测试属性选择器
+
+        public interface ITestAttributeSelector
+        {
+            string StringData { get; set; }
+            string StringDataOnlyGet { get; }
+            string StringDataOnlySet { set; }
+
+            List<string> ListData { get; set; }
+            ITestAttributeSelector ClassData { set; }
+            Dictionary<string, List<ITestAttributeSelector>> ComplexGenericTypeOnlyGet { get; }
+            Dictionary<string, List<ITestAttributeSelector>> ComplexGenericTypeOnlySet { set; }
+        }
+
+        [TestMethod]
+        public void TestAttributeSelector()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestAttributeSelector))
+            {
+                Class = {Name = "TestAttributeSelector"}
+            };
+
+            policy.Factory(context);
+            // Console.WriteLine(Util.GenerateFromType(context.Class));
+
+            Assert.AreEqual(
+                @"public class TestAttributeSelector {
+    
+    public static string StringData {
+        get {
+            return Instance.StringData;
+        }
+        set {
+            Instance.StringData = value;
+        }
+    }
+    
+    public static string StringDataOnlyGet {
+        get {
+            return Instance.StringDataOnlyGet;
+        }
+    }
+    
+    public static string StringDataOnlySet {
+        set {
+            Instance.StringDataOnlySet = value;
+        }
+    }
+    
+    public static System.Collections.Generic.List<string> ListData {
+        get {
+            return Instance.ListData;
+        }
+        set {
+            Instance.ListData = value;
+        }
+    }
+    
+    public static CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestAttributeSelector ClassData {
+        set {
+            Instance.ClassData = value;
+        }
+    }
+    
+    public static System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestAttributeSelector>> ComplexGenericTypeOnlyGet {
+        get {
+            return Instance.ComplexGenericTypeOnlyGet;
+        }
+    }
+    
+    public static System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestAttributeSelector>> ComplexGenericTypeOnlySet {
+        set {
+            Instance.ComplexGenericTypeOnlySet = value;
+        }
+    }
+}", Util.GenerateFromType(context.Class));
+        }
+
+        #endregion
+
+        #region 测试带有params特性的参数
+        /*
+        public interface ITestHasParamsAttr
+        {
+            string TestFunction(int a, string[] datas1, params string[] datas);
+            string TestNoParamsFunction(int a, string[] datas1, string[] datas);
+            string TestDictParamsFunction(int a, string[] datas1, Dictionary<string, List<ITestInterfaceParent>>[] datas);
+            string TestArrayFunction(int a, Array datas);
+        }
+
+        [TestMethod]
+        public void TestHasParamsAttr()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestHasParamsAttr))
+            {
+                Class = { Name = "TestHasParamsAttr" }
+            };
+
+            policy.Factory(context);
+            Console.WriteLine(Util.GenerateFromType(context.Class));
+
+        }*/
+        #endregion
+
+        #region 测试接口继承含有模版方法的接口
+
+        #endregion
+
+        #region 重载接口测试
+
         #endregion
     }
 }

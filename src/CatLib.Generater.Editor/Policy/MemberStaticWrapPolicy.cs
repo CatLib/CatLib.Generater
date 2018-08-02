@@ -15,6 +15,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CatLib.Generater.Editor.Policy
@@ -214,6 +215,10 @@ namespace CatLib.Generater.Editor.Policy
                 {
                     parameterDeclaration.Name += " = " + ToDefaultValueString(parameter.DefaultValue);
                 }
+                //else if (index == (parameters.Length - 1) && parameter.ParameterType.IsArray)
+                //{
+                //    parameterDeclaration.Type = new CodeTypeReference("params " + parameterDeclaration.Type.BaseType + "[]");
+                //}
 
                 member.Parameters.Add(parameterDeclaration);
                 result[index] = new CodeVariableReferenceExpression
@@ -359,11 +364,26 @@ namespace CatLib.Generater.Editor.Policy
         /// <param name="method">原始方法</param>
         private CodeTypeMember CreateGetSetSepcialMethod(string name, MethodInfo method)
         {
+            var memberProperty = method.ReturnType;
+            if (memberProperty == typeof(void))
+            {
+                var property = context.Original.GetProperty(name);
+                if (property != null)
+                {
+                    memberProperty = property.PropertyType;
+                }
+            }
+
+            if (memberProperty == null)
+            {
+                throw new GenerateException("Property [" + name + "] type cannot be null");
+            }
+
             var member = new CodeMemberProperty
             {
                 Name = name,
                 Attributes = MemberAttributes.Static | MemberAttributes.Public,
-                Type = new CodeTypeReference(method.ReturnType.ToString())
+                Type = new CodeTypeReference(memberProperty.ToString())
             };
             return member;
         }

@@ -58,7 +58,7 @@ namespace CatLib.Generater.Editor.Policy
             context.Class.Name = Prefix + facadeName + Suffix;
             context.Class.IsClass = true;
             context.Class.TypeAttributes = TypeAttributes;
-            context.Class.BaseTypes.Add("Facade<" + context.Original.FullName + ">");
+            context.Class.BaseTypes.Add("Facade<" + context.Original + ">");
         }
     }
 }
