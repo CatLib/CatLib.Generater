@@ -14,6 +14,7 @@ using CatLib.Generater.Editor.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using CatLib.Generater.Editor.Policy.StaticWrap;
 
 namespace CatLib.Generater.Editor.Tests.Policy
 {
@@ -371,20 +372,72 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
         #region 重载接口测试
 
+        public interface ITestOverloadParent3
+        {
+            //Action TestFunction { get; set; }
+            //Action TestCategoryAttribute { get; set; }
+
+            void Test();
+        }
+
+        public interface ITestOverloadParent2 : ITestOverloadParent3
+        {
+            Action TestCategoryAttribute { get; set; }
+            void Test();
+            //Action TestCategoryAttribute();
+            //new event Action TestFunction;
+
+        }
         public interface ITestOverloadParent
         {
-            void TestFunction(int a);
+            void Test(int a);
+            event Action TestCategoryAttribute;
+            //event Action TestCategoryAttribute;
+            // Action TestFunction();
         }
-        public interface ITestOverload : ITestOverloadParent
+        public interface ITestOverload : ITestOverloadParent, ITestOverloadParent2
         {
-            void TestFunction();
+            void Test(int a);
+            //event Action TestCategoryAttribute;
+            //new event Action TestFunction;
+            //new event Action TestFunction;
+            //Action TestFunction { get; set; }
 
-            new int TestFunction(int a);
+            // Action<int> TestCategoryAttribute();
         }
+        /*
+        public class tt : ITestOverload
+        {
+            public event Action TestCategoryAttribute;
+            public event Action TestFunction;
+            Action ITestOverloadParent3.TestFunction { get; set; }
+
+            Action ITestOverloadParent.TestFunction()
+            {
+                return null;
+            }
+
+            Action ITestOverload.TestFunction(int a, int b)
+            {
+                return null;
+            }
+
+            /*
+            public Action<int> TestCategoryAttribute()
+            {
+                return null;
+            }
+        } */
 
         [TestMethod]
         public void TestOverload()
         {
+            ITestOverload a = null;
+            a.TestCategoryAttribute();
+            a.TestCategoryAttribute = () => { };
+            a.Test();
+            a.Test(1);
+
             var policy = new MemberStaticWrapPolicy();
             var context = new FacadeContext(null, typeof(ITestOverload))
             {
@@ -395,6 +448,10 @@ namespace CatLib.Generater.Editor.Tests.Policy
             Console.WriteLine(Util.GenerateFromType(context.Class));
 
         }
+        #endregion
+
+        #region 对于 this[] 的特殊字段进行测试
+
         #endregion
     }
 }
