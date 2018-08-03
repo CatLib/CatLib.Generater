@@ -336,11 +336,65 @@ namespace CatLib.Generater.Editor.Tests.Policy
         #endregion
 
         #region 测试接口继承含有模版方法的接口
+        public interface ITestHasGenericInterfaceParent<T>
+        {
+            T Say(T value, T def = default(T));
+        }
 
+        public interface ITestHasGenericInterface : ITestHasGenericInterfaceParent<ITestHasGenericInterface>
+        {
+            
+        }
+
+        [TestMethod]
+        public void TestHasGenericInterface()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestHasGenericInterface))
+            {
+                Class = { Name = "TestHasGenericInterface" }
+            };
+
+            policy.Factory(context);
+            //Console.WriteLine(Util.GenerateFromType(context.Class));
+
+            Assert.AreEqual(
+@"public class TestHasGenericInterface {
+    
+    public static CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestHasGenericInterface Say(CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestHasGenericInterface value, CatLib.Generater.Editor.Tests.Policy.MemberStaticWrapPolicyTests.ITestHasGenericInterface def = null) {
+        return Instance.Say(value, def);
+    }
+}", Util.GenerateFromType(context.Class));
+
+        }
         #endregion
 
         #region 重载接口测试
 
+        public interface ITestOverloadParent
+        {
+            void TestFunction(int a);
+        }
+        public interface ITestOverload : ITestOverloadParent
+        {
+            void TestFunction();
+
+            new int TestFunction(int a);
+        }
+
+        [TestMethod]
+        public void TestOverload()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestOverload))
+            {
+                Class = { Name = "TestOverload" }
+            };
+
+            policy.Factory(context);
+            Console.WriteLine(Util.GenerateFromType(context.Class));
+
+        }
         #endregion
     }
 }

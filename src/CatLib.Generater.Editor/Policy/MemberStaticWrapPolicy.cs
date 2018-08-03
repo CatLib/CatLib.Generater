@@ -334,7 +334,7 @@ namespace CatLib.Generater.Editor.Policy
             {
                 if (generate.HasGet)
                 {
-                    throw new GenerateException("Method [" + name + "] is alreay generate Get Attributes");
+                    return;
                 }
 
                 generate.GetStatements.Add(new CodeMethodReturnStatement(
@@ -346,7 +346,7 @@ namespace CatLib.Generater.Editor.Policy
             {
                 if (generate.HasSet)
                 {
-                    throw new GenerateException("Method [" + name + "] is alreay generate Set Attributes");
+                    return;
                 }
 
                 generate.SetStatements.Add(new CodeAssignStatement(
