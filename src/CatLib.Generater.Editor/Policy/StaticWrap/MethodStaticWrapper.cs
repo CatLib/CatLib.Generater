@@ -158,7 +158,5 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
 
             return result;
         }
-
-        
     }
 }

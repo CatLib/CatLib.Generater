@@ -46,7 +46,7 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
         /// <returns></returns>
         public static CodeExpression GetInstance()
         {
-            return new CodeVariableReferenceExpression(StaticInstance ?? "Instance");
+            return new CodeVariableReferenceExpression(StaticInstance);
         }
 
         /// <summary>
