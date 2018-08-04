@@ -13,6 +13,7 @@ using System;
 using System.CodeDom;
 using CatLib.Generater.Editor.Context;
 using CatLib.Generater.Editor.Policy;
+using CatLib.Generater.Editor.Policy.StaticWrap;
 
 namespace CatLib.Generater.Editor
 {

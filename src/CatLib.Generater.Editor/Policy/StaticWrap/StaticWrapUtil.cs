@@ -37,6 +37,7 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
         static StaticWrapUtil()
         {
             codeDomProvider = CodeDomProvider.CreateProvider("CSharp");
+            StaticInstance = "Instance";
         }
 
         /// <summary>

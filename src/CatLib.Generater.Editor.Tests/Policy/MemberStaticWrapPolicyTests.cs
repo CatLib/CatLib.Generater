@@ -196,7 +196,7 @@ namespace CatLib.Generater.Editor.Tests.Policy
             };
 
             policy.Factory(context);
-            // Console.WriteLine(Util.GenerateFromType(context.Class));
+             Console.WriteLine(Util.GenerateFromType(context.Class));
 
             Assert.AreEqual(
                 @"public class TestEvent {
@@ -374,7 +374,7 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
         public interface ITestOverloadParent3
         {
-            //Action TestFunction { get; set; }
+            Action TestFunction { get; set; }
             //Action TestCategoryAttribute { get; set; }
 
             void Test();
@@ -382,61 +382,39 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
         public interface ITestOverloadParent2 : ITestOverloadParent3
         {
-            Action TestCategoryAttribute { get; set; }
-            void Test();
+            //Action TestCategoryAttribute { get; set; }
+            //void Test();
             //Action TestCategoryAttribute();
-            //new event Action TestFunction;
+            new event Action TestFunction;
 
         }
         public interface ITestOverloadParent
         {
-            void Test(int a);
-            event Action TestCategoryAttribute;
+            //void Test(int a);
             //event Action TestCategoryAttribute;
-            // Action TestFunction();
+            //event Action TestCategoryAttribute;
+            event Action TestFunction;
         }
         public interface ITestOverload : ITestOverloadParent, ITestOverloadParent2
         {
-            void Test(int a);
+            //void Test(int a);
             //event Action TestCategoryAttribute;
             //new event Action TestFunction;
             //new event Action TestFunction;
-            //Action TestFunction { get; set; }
+            event Action TestFunction;
 
             // Action<int> TestCategoryAttribute();
         }
-        /*
-        public class tt : ITestOverload
-        {
-            public event Action TestCategoryAttribute;
-            public event Action TestFunction;
-            Action ITestOverloadParent3.TestFunction { get; set; }
-
-            Action ITestOverloadParent.TestFunction()
-            {
-                return null;
-            }
-
-            Action ITestOverload.TestFunction(int a, int b)
-            {
-                return null;
-            }
-
-            /*
-            public Action<int> TestCategoryAttribute()
-            {
-                return null;
-            }
-        } */
 
         [TestMethod]
         public void TestOverload()
         {
             ITestOverload a = null;
-            a.TestCategoryAttribute();
-            a.TestCategoryAttribute = () => { };
-            a.Test();
-            a.Test(1);
+            a.TestFunction += () => { };
+            //a.TestCategoryAttribute();
+            //a.TestCategoryAttribute = () => { };
+            //a.Test();
+            //a.Test(1);
 
             var policy = new MemberStaticWrapPolicy();
             var context = new FacadeContext(null, typeof(ITestOverload))

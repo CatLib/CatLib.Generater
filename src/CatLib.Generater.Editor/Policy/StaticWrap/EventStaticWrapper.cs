@@ -32,7 +32,7 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
         remove {
             {instance}.{event} -= value;
         }
-}";
+    }";
 
         /// <summary>
         /// 已经完成的包装

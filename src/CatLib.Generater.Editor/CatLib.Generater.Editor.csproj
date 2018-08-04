@@ -52,8 +52,17 @@
     <Compile Include="Policy\ClassCreatePolicy.cs" />
     <Compile Include="Policy\HeadCommentStatementPolicy.cs" />
     <Compile Include="Policy\IPolicy.cs" />
-    <Compile Include="Policy\MemberStaticWrapPolicy.cs" />
+    <Compile Include="Policy\StaticWrap\IMemberPolymerization.cs" />
+    <Compile Include="Policy\StaticWrap\IStaticWrapper.cs" />
+    <Compile Include="Policy\StaticWrap\MemberPolymerization.cs" />
+    <Compile Include="Policy\StaticWrap\MemberStaticWrapPolicy.cs" />
     <Compile Include="Policy\NameSpcaePolicy.cs" />
+    <Compile Include="Policy\StaticWrap\EventStaticWrapper.cs" />
+    <Compile Include="Policy\StaticWrap\MethodStaticWrapper.cs" />
+    <Compile Include="Policy\StaticWrap\PropertyStaticWrapper.cs" />
+    <Compile Include="Policy\StaticWrap\StaticWrapUtil.cs" />
+    <Compile Include="Policy\StaticWrap\TypeMembers.cs" />
+    <Compile Include="Policy\StaticWrap\WrapperTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityMenuEntry.cs" />
   </ItemGroup>
