@@ -371,61 +371,80 @@ namespace CatLib.Generater.Editor.Tests.Policy
         #endregion
 
         #region 重载接口测试
-
-        public interface ITestOverloadParent3
+        public interface ITestOverloadMethod_v0_0
         {
-            Action TestFunction { get; set; }
-            //Action TestCategoryAttribute { get; set; }
-
-            void Test();
+            void TestFunction(int a);
+            void TestFunction2(int a);
         }
 
-        public interface ITestOverloadParent2 : ITestOverloadParent3
+        public interface ITestOverloadMethod_v0_1 : ITestOverloadMethod_v0_0
         {
-            //Action TestCategoryAttribute { get; set; }
-            //void Test();
-            //Action TestCategoryAttribute();
-            new event Action TestFunction;
-
+            new void TestFunction(int a);
+            void TestFunction2(double a = 100);
+            Action TestFunctionRef(int a, ref double b);
         }
-        public interface ITestOverloadParent
-        {
-            //void Test(int a);
-            //event Action TestCategoryAttribute;
-            //event Action TestCategoryAttribute;
-            event Action TestFunction;
-        }
-        public interface ITestOverload : ITestOverloadParent, ITestOverloadParent2
-        {
-            //void Test(int a);
-            //event Action TestCategoryAttribute;
-            //new event Action TestFunction;
-            //new event Action TestFunction;
-            event Action TestFunction;
 
-            // Action<int> TestCategoryAttribute();
+        public interface ITestOverloadMethod_v1_0
+        {
+            void TestFunction(int a);
+            void TestFunction2(double a, int b = 100);
+            void TestFunctionRef(int a, ref double b);
+        }
+
+        public interface ITestOverloadMethod : ITestOverloadMethod_v0_1, ITestOverloadMethod_v1_0
+        {
+            void TestFunction();
+            new void TestFunction2(int a = 100);
+            new event Action TestFunctionRef;
         }
 
         [TestMethod]
-        public void TestOverload()
+        public void TestOverloadMethod()
         {
-            ITestOverload a = null;
-            a.TestFunction += () => { };
-            //a.TestCategoryAttribute();
-            //a.TestCategoryAttribute = () => { };
-            //a.Test();
-            //a.Test(1);
-
             var policy = new MemberStaticWrapPolicy();
-            var context = new FacadeContext(null, typeof(ITestOverload))
+            var context = new FacadeContext(null, typeof(ITestOverloadMethod))
             {
-                Class = { Name = "TestOverload" }
+                Class = { Name = "TestOverloadMethod" }
             };
 
             policy.Factory(context);
-            Console.WriteLine(Util.GenerateFromType(context.Class));
+            // Console.WriteLine(Util.GenerateFromType(context.Class));
 
+            Assert.AreEqual(
+@"public class TestOverloadMethod {
+    
+    public static event System.Action TestFunctionRef {
+        add {  
+            Instance.TestFunctionRef += value;
         }
+        remove {
+            Instance.TestFunctionRef -= value;
+        }
+    }
+    
+    public static void TestFunction() {
+        Instance.TestFunction();
+    }
+    
+    public static void TestFunction2(int a = 100) {
+        Instance.TestFunction2(a);
+    }
+    
+    public static void TestFunction(int a) {
+        Instance.TestFunction(a);
+    }
+    
+    public static void TestFunction2(double a = 100d) {
+        Instance.TestFunction2(a);
+    }
+    
+    public static void TestFunction2(double a, int b = 100) {
+        Instance.TestFunction2(a, b);
+    }
+}", Util.GenerateFromType(context.Class));
+        }
+
+
         #endregion
 
         #region 对于 this[] 的特殊字段进行测试
