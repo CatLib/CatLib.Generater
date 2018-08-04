@@ -142,7 +142,7 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
                 // 带有默认值的可选参数处理
                 if (parameter.IsOptional)
                 {
-                    parameterDeclaration.Name += " = " + ToDefaultValueString(parameter.DefaultValue);
+                    parameterDeclaration.Name += " = " + StaticWrapUtil.ToDefaultValueString(parameter.DefaultValue);
                 }
                 //else if (index == (parameters.Length - 1) && parameter.ParameterType.IsArray)
                 //{
@@ -159,39 +159,6 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
             return result;
         }
 
-        /// <summary>
-        /// 转为默认值所使用的字符串
-        /// </summary>
-        /// <param name="data">基础数据</param>
-        /// <returns>被转换的字符串</returns>
-        private string ToDefaultValueString(object data)
-        {
-            if (data == null)
-            {
-                return "null";
-            }
-
-            if (data is string)
-            {
-                return "\"" + data + "\"";
-            }
-
-            if (data is float)
-            {
-                return data + "f";
-            }
-
-            if (data is double)
-            {
-                return data + "d";
-            }
-
-            if (data is bool)
-            {
-                return data.ToString().ToLower();
-            }
-
-            return data.ToString();
-        }
+        
     }
 }

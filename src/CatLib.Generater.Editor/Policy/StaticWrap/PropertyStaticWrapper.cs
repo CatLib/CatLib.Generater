@@ -66,6 +66,11 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
         {
             var generate = CreatePropertyMember(propertyInfo.Name, propertyInfo.PropertyType);
 
+            if (propertyInfo.GetIndexParameters().Length > 0)
+            {
+                return null;
+            }
+
             if (propertyInfo.CanRead)
             {
                 generate.GetStatements.Add(new CodeMethodReturnStatement(

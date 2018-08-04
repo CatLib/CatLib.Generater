@@ -65,5 +65,40 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
                 return sw.ToString();
             }
         }
+
+        /// <summary>
+        /// 转为默认值所使用的字符串
+        /// </summary>
+        /// <param name="data">基础数据</param>
+        /// <returns>被转换的字符串</returns>
+        public static string ToDefaultValueString(object data)
+        {
+            if (data == null)
+            {
+                return "null";
+            }
+
+            if (data is string)
+            {
+                return "\"" + data + "\"";
+            }
+
+            if (data is float)
+            {
+                return data + "f";
+            }
+
+            if (data is double)
+            {
+                return data + "d";
+            }
+
+            if (data is bool)
+            {
+                return data.ToString().ToLower();
+            }
+
+            return data.ToString();
+        }
     }
 }

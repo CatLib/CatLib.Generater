@@ -31,12 +31,7 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
         // 继承的不同接口间出现同名的属性和函数，函数优先
         // 继承关系中函数重载不会导致歧义，但相同的重载只生成一次
         // 如果函数返回值不同重载的参数表相同，则引发二义性异常
-
-
-        // 先按照 函数，事件，属性的顺序生成首层的成员。成员保存到临时变量中
-        // 将首层的成员名字加入禁止使用的成员名字列表
-        // 再生成继承的 函数，事件，属性。保存到临时变量中
-        // 将函数导入到上下文，同时建立排他名字hash。后续事件和属性的导入会检查排他hash，如果存在则列外。
+        // 如果函数参数表相同，方向标记不同，则引发二义性异常
 
         /// <summary>
         /// 成员类型关系
@@ -191,7 +186,6 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
             KeyValuePair<string, string> overrideMethod;
             if (methodsOverrideName.TryGetValue(overrideName, out overrideMethod))
             {
-                // 方法调用二义性检查
                 if (overrideMethod.Key != directionName
                     || overrideMethod.Value != method.ReturnType.BaseType)
                 {
@@ -206,11 +200,6 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
             methodsOverrideName.Add(overrideName,
                 new KeyValuePair<string, string>(directionName, method.ReturnType.BaseType));
         }
-
-        // 继承的不同接口间出现同名的事件和属性会导致二义性，所以忽略生成
-        // 继承的不同接口间出现同名的事件和函数，函数优先
-        // 继承的不同接口间出现同名的属性和函数，函数优先
-        // 继承关系中函数重载不会导致歧义，但相同的重载只生成一次
 
         /// <summary>
         /// 导出事件

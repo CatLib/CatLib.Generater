@@ -14,6 +14,7 @@ using CatLib.Generater.Editor.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using CatLib.Generater.Editor.Policy.StaticWrap;
 
 namespace CatLib.Generater.Editor.Tests.Policy
@@ -311,31 +312,6 @@ namespace CatLib.Generater.Editor.Tests.Policy
 
         #endregion
 
-        #region 测试带有params特性的参数
-        /*
-        public interface ITestHasParamsAttr
-        {
-            string TestFunction(int a, string[] datas1, params string[] datas);
-            string TestNoParamsFunction(int a, string[] datas1, string[] datas);
-            string TestDictParamsFunction(int a, string[] datas1, Dictionary<string, List<ITestInterfaceParent>>[] datas);
-            string TestArrayFunction(int a, Array datas);
-        }
-
-        [TestMethod]
-        public void TestHasParamsAttr()
-        {
-            var policy = new MemberStaticWrapPolicy();
-            var context = new FacadeContext(null, typeof(ITestHasParamsAttr))
-            {
-                Class = { Name = "TestHasParamsAttr" }
-            };
-
-            policy.Factory(context);
-            Console.WriteLine(Util.GenerateFromType(context.Class));
-
-        }*/
-        #endregion
-
         #region 测试接口继承含有模版方法的接口
         public interface ITestHasGenericInterfaceParent<T>
         {
@@ -370,7 +346,7 @@ namespace CatLib.Generater.Editor.Tests.Policy
         }
         #endregion
 
-        #region 重载接口测试
+        #region 重载函数测试
         public interface ITestOverloadMethod_v0_0
         {
             void TestFunction(int a);
@@ -443,12 +419,253 @@ namespace CatLib.Generater.Editor.Tests.Policy
     }
 }", Util.GenerateFromType(context.Class));
         }
-
-
         #endregion
 
-        #region 对于 this[] 的特殊字段进行测试
+        #region 重载函数二义性检查（返回值）
 
+        public interface IMethodReturnCallTwoSense_0_0
+        {
+            int TestFunction();
+        }
+
+        public interface IMethodReturnCallTwoSense_0_1 : IMethodReturnCallTwoSense_0_0
+        {
+            int TestFunction(float num);
+        }
+
+        public interface IMethodReturnCallTwoSense_1_0
+        {
+            void TestFunction(float num);
+        }
+
+        public interface IMethodReturnCallTwoSense : IMethodReturnCallTwoSense_0_1 , IMethodReturnCallTwoSense_1_0
+        {
+            
+        }
+
+        [TestMethod]
+        public void MethodReturnCallTwoSense()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(IMethodReturnCallTwoSense))
+            {
+                Class = { Name = "MethodReturnCallTwoSense" }
+            };
+
+            try
+            {
+                policy.Factory(context);
+            }
+            catch (GenerateException)
+            {
+                return;
+            }
+
+            Assert.Fail();
+        }
+        #endregion
+
+        #region 重载函数二义性检查（参数方向）
+        public interface IMethodDirectionCallTwoSense_0_0
+        {
+            int TestFunction(out int a);
+        }
+
+        public interface IMethodDirectionCallTwoSense_0_1 : IMethodDirectionCallTwoSense_0_0
+        {
+            int TestFunction(out int a);
+        }
+
+        public interface IMethodDirectionCallTwoSense_1_0
+        {
+            int TestFunction(ref int a);
+        }
+
+        public interface IMethodDirectionCallTwoSense : IMethodDirectionCallTwoSense_0_1, IMethodDirectionCallTwoSense_1_0
+        {
+
+        }
+
+        [TestMethod]
+        public void MethodDirectionCallTwoSense()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(IMethodDirectionCallTwoSense))
+            {
+                Class = { Name = "MethodDirectionCallTwoSense" }
+            };
+
+            try
+            {
+                policy.Factory(context);
+            }
+            catch (GenerateException)
+            {
+                return;
+            }
+
+            Assert.Fail();
+        }
+        #endregion
+
+        #region 覆盖继承函数
+        public interface IOverrideMethod_0_0
+        {
+            int TestFunction(out int a);
+            int TestFunction2(out int a);
+        }
+
+        public interface IOverrideMethod_0_1 : IOverrideMethod_0_0
+        {
+            new int TestFunction(out int a);
+        }
+
+        public interface IOverrideMethod_1_0
+        {
+            int TestFunction(ref int a);
+            int TestFunction2(out int a, out int b);
+        }
+
+        public interface IOverrideMethod : IOverrideMethod_0_1, IOverrideMethod_1_0
+        {
+            new event Action TestFunction ;
+            new float TestFunction2 { get; }
+        }
+
+        [TestMethod]
+        public void OverrideMethod()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(IOverrideMethod))
+            {
+                Class = { Name = "OverrideMethod" }
+            };
+
+            policy.Factory(context);
+
+            Console.WriteLine(Util.GenerateFromType(context.Class));
+
+            Assert.AreEqual(
+@"public class OverrideMethod {
+    
+    public static event System.Action TestFunction {
+        add {  
+            Instance.TestFunction += value;
+        }
+        remove {
+            Instance.TestFunction -= value;
+        }
+    }
+    
+    public static float TestFunction2 {
+        get {
+            return Instance.TestFunction2;
+        }
+    }
+}", Util.GenerateFromType(context.Class));
+        }
+        #endregion
+
+        #region 混合覆盖
+        public interface IMixedOverride_0_0
+        {
+            event Action TestFunction;
+            Action TestFunction2 { get; }
+            float TestFunction3(int a = 100);
+        }
+
+        public interface IMixedOverride_0_1 : IMixedOverride_0_0
+        {
+        }
+
+        public interface IMixedOverride_1_0
+        {
+            Action TestFunction { get; }
+            float TestFunction2(int a = 100);
+            event Action TestFunction3;
+        }
+
+        public interface IMixedOverride : IMixedOverride_0_1, IMixedOverride_1_0
+        {
+            new float TestFunction(int a = 100);
+            new event Action<MemberStaticWrapPolicy> TestFunction2;
+            new Action TestFunction3 { get; set; }
+        }
+
+        [TestMethod]
+        public void MixedOverride()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(IMixedOverride))
+            {
+                Class = { Name = "MixedOverride" }
+            };
+
+            policy.Factory(context);
+
+            Console.WriteLine(Util.GenerateFromType(context.Class));
+
+            Assert.AreEqual(@"public class MixedOverride {
+    
+    public static event System.Action<CatLib.Generater.Editor.Policy.StaticWrap.MemberStaticWrapPolicy> TestFunction2 {
+        add {  
+            Instance.TestFunction2 += value;
+        }
+        remove {
+            Instance.TestFunction2 -= value;
+        }
+    }
+    
+    public static System.Action TestFunction3 {
+        get {
+            return Instance.TestFunction3;
+        }
+        set {
+            Instance.TestFunction3 = value;
+        }
+    }
+    
+    public static float TestFunction(int a = 100) {
+        return Instance.TestFunction(a);
+    }
+}", Util.GenerateFromType(context.Class));
+        }
+        #endregion
+
+        #region 对于 this[] 的特殊字段进行剥离测试
+        public interface ITestThisProperty_0_0
+        {
+            int this[uint b] { get; set; }
+        }
+
+        public interface ITestThisProperty: ITestThisProperty_0_0
+        {
+            int this[int index = 1, float b = 10f] { get; set; }
+            int this[float b] { get; set; }
+            void TestFunction();
+        }
+        
+        [TestMethod]
+        public void TestThisProperty()
+        {
+            var policy = new MemberStaticWrapPolicy();
+            var context = new FacadeContext(null, typeof(ITestThisProperty))
+            {
+                Class = { Name = "TestThisProperty" }
+            };
+
+            policy.Factory(context);
+
+            // Console.WriteLine(Util.GenerateFromType(context.Class));
+
+            Assert.AreEqual(
+@"public class TestThisProperty {
+    
+    public static void TestFunction() {
+        Instance.TestFunction();
+    }
+}", Util.GenerateFromType(context.Class));
+        }
         #endregion
     }
 }
