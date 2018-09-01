@@ -9,11 +9,6 @@
  * Document: http://catlib.io/
  */
 
-using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Reflection;
-
 namespace CatLib.Generater.Editor.Policy
 {
     /// <summary>

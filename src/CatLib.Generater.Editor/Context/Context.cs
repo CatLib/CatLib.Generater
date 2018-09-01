@@ -45,6 +45,11 @@ namespace CatLib.Generater.Editor.Context
         public CodeTypeDeclaration Class { get; private set; }
 
         /// <summary>
+        /// 已经生成的代码
+        /// </summary>
+        public string GenerateCode { get; set; }
+
+        /// <summary>
         /// 创建一个新的构建上下文
         /// </summary>
         /// <param name="enviroment">运行环境</param>

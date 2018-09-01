@@ -80,6 +80,11 @@ namespace CatLib.Generater.Editor
         }
 
         /// <summary>
+        /// 同步状态
+        /// </summary>
+        private readonly object syncRoot = new object();
+
+        /// <summary>
         /// 构建一个代码生成器
         /// </summary>
         protected CodeGenerater()
@@ -120,7 +125,7 @@ namespace CatLib.Generater.Editor
         /// <param name="environment">文件写入器</param>
         public IGenerateAsyncResult Generate(IEnvironment environment)
         {
-            lock (generating)
+            lock (syncRoot)
             {
                 if (generating != null)
                 {
@@ -160,22 +165,23 @@ namespace CatLib.Generater.Editor
             }
             finally
             {
-                if (!isExceotion)
+                try
                 {
-                    Environment.Commit();
-                    if (OnCompleted != null)
+                    if (!isExceotion)
                     {
-                        OnCompleted.Invoke();
+                        Environment.Commit();
+                        if (OnCompleted != null)
+                        {
+                            OnCompleted.Invoke();
+                        }
                     }
                 }
-
-                if (Environment is IDisposable)
+                finally
                 {
-                    ((IDisposable)Environment).Dispose();
+                    generating.IsCompleted = true;
+                    Environment = null;
+                    generating = null;
                 }
-
-                Environment = null;
-                generating = null;
             }
         }
 
@@ -195,7 +201,7 @@ namespace CatLib.Generater.Editor
                         policy.Factory(context);
                     }
                 }
-                generating.Process = (float) i / types.Length;
+                generating.Process = Math.Min(1, (float) (i + 1) / types.Length);
             }
         }
 

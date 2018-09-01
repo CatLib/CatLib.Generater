@@ -35,21 +35,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildStages.cs" />
-    <Compile Include="CatLib_AOTKit_CodeWritter.cs" />
-    <Compile Include="CatLib_AOTKit_Reflection.cs" />
-    <Compile Include="CatLib_CodeGenerater_APIs.cs" />
-    <Compile Include="CatLib_CodeGenerater_Facade.cs" />
     <Compile Include="CodeGenerater.cs" />
     <Compile Include="Context\Context.cs" />
     <Compile Include="Context\FacadeContext.cs" />
+    <Compile Include="DefaultEnvironment.cs" />
     <Compile Include="FacadeCodeGenerater.cs" />
     <Compile Include="GenerateAsyncResult.cs" />
     <Compile Include="GenerateException.cs" />
-    <Compile Include="GenerateFacadeAttribute.cs" />
     <Compile Include="IEnvironment.cs" />
     <Compile Include="IGenerateAsyncResult.cs" />
     <Compile Include="ICodeGenerater.cs" />
     <Compile Include="Policy\ClassCreatePolicy.cs" />
+    <Compile Include="Policy\FileWriterPolicy.cs" />
+    <Compile Include="Policy\GenerateCodePolicy.cs" />
     <Compile Include="Policy\HeadCommentStatementPolicy.cs" />
     <Compile Include="Policy\IPolicy.cs" />
     <Compile Include="Policy\StaticWrap\IMemberPolymerization.cs" />
@@ -64,7 +62,6 @@
     <Compile Include="Policy\StaticWrap\TypeMembers.cs" />
     <Compile Include="Policy\StaticWrap\WrapperTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnityMenuEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CatLib.Generater\CatLib.Generater.csproj">

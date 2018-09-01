@@ -25,14 +25,14 @@ namespace CatLib.Generater.Editor.Policy.StaticWrap
         /// 事件代码模版
         /// </summary>
         private readonly string template =
-@"    public static event {type} {event} {
-        add {  
-            {instance}.{event} += value;
-        }
-        remove {
-            {instance}.{event} -= value;
-        }
-    }";
+@"        public static event {type} {event} {
+            add {  
+                {instance}.{event} += value;
+            }
+            remove {
+                {instance}.{event} -= value;
+            }
+        }";
 
         /// <summary>
         /// 已经完成的包装

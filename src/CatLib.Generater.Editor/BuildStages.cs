@@ -17,18 +17,23 @@ namespace CatLib.Generater.Editor
     public enum BuildStages
     {
         /// <summary>
-        /// 预编译
+        /// 代码编译之前
         /// </summary>
-        Precompiled,
+        BeforeGenerating,
 
         /// <summary>
-        /// 代码构建
+        /// 代码编译中
         /// </summary>
-        GenCode,
+        Generating,
 
         /// <summary>
-        /// 编译完成
+        /// 代码编译之后
         /// </summary>
-        Compiled,
+        AfterGenerating,
+
+        /// <summary>
+        /// 已完成
+        /// </summary>
+        Completed,
     }
 }

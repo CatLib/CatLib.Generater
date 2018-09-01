@@ -9,11 +9,10 @@
  * Document: http://catlib.io/
  */
 
-using System;
-using System.CodeDom;
 using CatLib.Generater.Editor.Context;
 using CatLib.Generater.Editor.Policy;
 using CatLib.Generater.Editor.Policy.StaticWrap;
+using System;
 
 namespace CatLib.Generater.Editor
 {
@@ -36,9 +35,16 @@ namespace CatLib.Generater.Editor
         public FacadeCodeGenerater()
             : base()
         {
-            AddPolicy(BuildStages.Precompiled, new NameSpcaePolicy());
-            AddPolicy(BuildStages.Precompiled, new ClassCreatePolicy());
-            AddPolicy(BuildStages.Precompiled, new MemberStaticWrapPolicy());
+            // BeforeGenerating
+            AddPolicy(BuildStages.BeforeGenerating, new NameSpcaePolicy());
+            AddPolicy(BuildStages.BeforeGenerating, new ClassCreatePolicy());
+            AddPolicy(BuildStages.BeforeGenerating, new MemberStaticWrapPolicy());
+
+            // Generating
+            AddPolicy(BuildStages.Generating, new GenerateCodePolicy());
+
+            // AfterGenerating
+            AddPolicy(BuildStages.AfterGenerating, new FileWriterPolicy());
         }
 
         /// <summary>
